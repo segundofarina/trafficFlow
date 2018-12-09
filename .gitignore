@@ -42,4 +42,4 @@ webapp/target/generated-sources/
 .idea
 
 Videos/
-out/
+out/trafficFlow/**
