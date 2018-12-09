@@ -13,15 +13,19 @@ public class Simulation {
     private int vmax;
     private double probabilityOfDescreasing;
     private Random random;
+    private double dt;
     Printer printer;
+    boolean periodic;
 
-    public Simulation(int numberOfCars, int roadLength,int vmax,double probabilityOfDescreasing) {
+    public Simulation(int numberOfCars, int roadLength,int vmax,double probabilityOfDescreasing,boolean periodic) {
         this.cars = new HashSet<>();
         this.roadLength = roadLength;
         this.vmax = vmax;
         this.random = new Random();
         this.probabilityOfDescreasing = probabilityOfDescreasing;
         this.printer = new Printer("./out/trafficFlow/animation_");
+        this.dt = 1.0/60;
+        this.periodic = periodic;
 
         List<Integer> positions = IntStream.range(0,roadLength).boxed()
                 .collect(Collectors.toList());
@@ -63,37 +67,37 @@ public class Simulation {
     public void setVelocitites(){
         cars.forEach(car -> {
             if(car.getVelocity()<vmax)
-                car.increaseVelocity();
+                car.increaseVelocity(dt);
         });
     }
 
     public void slowDownIfVehicleAtSite(){
         cars.forEach(car -> {
-            int vel = car.getVelocity();
-            int carPos= car.getPosition();
+            double vel = car.getVelocity();
+            double carPos= car.getPosition();
             boolean hasToslowdown= cars.stream()
                     .anyMatch(otherCar ->
                             carPos < otherCar.getPosition() &&otherCar.getPosition()<= carPos+vel
                                 || carPos+vel-roadLength>0 && otherCar.getPosition() <carPos+vel-roadLength);
             if(hasToslowdown){
-                car.decreaseVelocity();
+                car.decreaseVelocity(dt);
             }
         });
     }
 
     public void randomDecrease(){
-        cars.forEach(car -> {if(random.nextDouble()> probabilityOfDescreasing)  car.increaseVelocity();} );
+        cars.forEach(car -> {if(random.nextDouble()> probabilityOfDescreasing)  car.decreaseVelocity(dt);} );
     }
 
     public void advanceVehicles(){
         cars.forEach(car -> {
-            int pos = car.getPosition();
-            int vel=  car.getVelocity();
+            double pos = car.getPosition();
+            double vel=  car.getVelocity();
 
-            if(pos+vel > roadLength){
-                pos=pos+vel-roadLength;
+            if(pos+(vel*dt) > roadLength){
+                pos=pos+(vel*dt)-roadLength;
             }else{
-                pos+=vel;
+                pos+=vel*dt;
             }
             car.setPosition(pos);
         });
