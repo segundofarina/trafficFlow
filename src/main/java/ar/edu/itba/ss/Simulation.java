@@ -24,7 +24,7 @@ public class Simulation {
         this.random = new Random();
         this.probabilityOfDescreasing = probabilityOfDescreasing;
         this.printer = new Printer("./out/trafficFlow/animation_");
-        this.dt = 1.0/60;
+        this.dt = 1;
         this.periodic = periodic;
 
         List<Integer> positions = IntStream.range(0,roadLength).boxed()
