@@ -60,9 +60,9 @@ public class Intersection {
 
     public double getPosition(Car car){
         if (car.getLaneType() == LaneType.HORIZONTAL){
-            return horizontalPos;
-        }else {
             return verticalPos;
+        }else {
+            return horizontalPos;
         }
     }
 
