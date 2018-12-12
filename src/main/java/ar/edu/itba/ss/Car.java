@@ -2,11 +2,13 @@ package ar.edu.itba.ss;
 
 public class Car {
 
+    private int id;
     private double position;
     private double velocity;
 
 
-    public Car(double position, double velocity) {
+    public Car(int id, double position, double velocity) {
+        this.id = id;
         this.position = position;
         this.velocity = velocity;
     }
@@ -27,6 +29,10 @@ public class Car {
         this.position = position;
     }
 
+    public double distanceTo(Car other){
+        return this.position-other.position;
+    }
+
     public void increaseVelocity(double dt){
         this.velocity+=dt;
     }
@@ -38,11 +44,30 @@ public class Car {
         }
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "Car{" +
                 "position=" + position +
                 ", velocity=" + velocity +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Car)) return false;
+
+        Car car = (Car) o;
+
+        return getId() == car.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return getId();
     }
 }

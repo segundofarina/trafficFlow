@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Printer {
@@ -30,16 +31,19 @@ public class Printer {
     }
 
 
-    private String generateFileString(Set<Car> allParticles) {
+    private String generateFileString(List<Lane> lanes) {
         Set<Car> limits = new HashSet<>();
+
+        int totalCars = lanes.stream().map(lane -> lane.getCars().size()).reduce(0, (a, b) -> a+b);
+
         //addBorders(limits);
         StringBuilder builder = new StringBuilder()
-                .append(allParticles.size() + limits.size())
+                .append(totalCars + limits.size())
                 .append("\r\n")
-                .append("// X\t vel\t \r\n");
+                .append("// X\t Y\t vel\t Radius\t\r\n");
 
-        appendParticles(allParticles, builder);
-        appendParticles(limits, builder);
+        appendParticles(lanes, builder);
+        //appendParticles(limits, direction, lanePosition, builder);
         return builder.toString();
     }
 
@@ -61,21 +65,54 @@ public class Printer {
 //        return count;
 //    }
 
-    private void appendParticles(Set<Car> cars, StringBuilder builder) {
+    private void appendParticles(List<Lane> lanes, StringBuilder builder) {
+        lanes.forEach(lane -> {
+            lane.getCars().forEach(car -> {
+                if(lane.getId() == 1) {
+                    builder.append(car.getPosition()*7.5)
+                            .append(" ")
+                            .append(lane.getLanePosition() * 7.5);
+                } else {
+                    builder.append(lane.getLanePosition() * 7.5)
+                            .append(" ")
+                            .append(car.getPosition()*7.5);
+                }
+
+                builder.append(" ")
+                        .append(new Double(car.getVelocity()).floatValue())
+                        .append(" ")
+                        .append(2.5)
+                        .append("\r\n");
+            });
+        });
+
+/*
         for (Car current : cars) {
             double vel = current.getVelocity();
-            builder.append(current.getPosition())
-                    .append(" ")
+
+            if(direction == LaneDirection.HORIZONTAL) {
+                builder.append(current.getPosition()*7.5)
+                        .append(" ")
+                        .append(lanePosition);
+            } else {
+                builder.append(lanePosition)
+                        .append(" ")
+                        .append(current.getPosition()*7.5);
+            }
+            //builder.append(current.getPosition()*7.5)
+              builder.append(" ")
                     .append(new Double(vel).floatValue())
+                    .append(" ")
+                    .append(2.5)
                     .append("\r\n");
 
 
-        }
+        }*/
     }
 
 
-    public void appendToAnimation(Set<Car> allParticles){
-        appendToFile(generateFileString(allParticles));
+    public void appendToAnimation(List<Lane> lanes){
+        appendToFile(generateFileString(lanes));
     }
     public void appendToFile( String data) {
         try {
@@ -93,4 +130,5 @@ public class Printer {
         }
 
     }
+
 }

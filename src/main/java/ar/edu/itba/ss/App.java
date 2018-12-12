@@ -8,6 +8,6 @@ public class App
 {
     public static void main( String[] args )
     {
-        new Simulation(80,1000,250,0.2,true).run();
+        new Simulation(40,67,2.5,5,0.2,true).run();
     }
 }
