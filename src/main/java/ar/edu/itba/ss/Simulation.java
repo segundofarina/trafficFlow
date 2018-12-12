@@ -34,15 +34,35 @@ public class Simulation {
         intersections.add(intersection2);
         intersections.add(intersection3);
 
-        List<Intersection> laneHIntersections = new ArrayList<>(intersections);
+        Intersection intersection1L2 = new Intersection(17,16);
+        Intersection intersection2L2 = new Intersection(17,32);
+        Intersection intersection3L2 = new Intersection(17,48);
+        intersections.add(intersection1L2);
+        intersections.add(intersection2L2);
+        intersections.add(intersection3L2);
+
+
+        List<Intersection> laneH1Intersections = new ArrayList<>();
+        laneH1Intersections.add(intersection1);
+        laneH1Intersections.add(intersection2);
+        laneH1Intersections.add(intersection3);
         List<Intersection> laneV1Intersections = new ArrayList<>();
         laneV1Intersections.add(intersection1);
+        laneV1Intersections.add(intersection1L2);
         List<Intersection> laneV2Intersections = new ArrayList<>();
         laneV2Intersections.add(intersection2);
+        laneV2Intersections.add(intersection2L2);
         List<Intersection> laneV3Intersections = new ArrayList<>();
         laneV3Intersections.add(intersection3);
+        laneV3Intersections.add(intersection3L2);
 
-        lanes.add(new Lane(LaneType.HORIZONTAL, 20, 67, vmax, probabilityOfDescreasing, dt, periodic, 16, laneHIntersections));
+        List<Intersection> laneH2Intersections = new ArrayList<>();
+        laneH2Intersections.add(intersection1L2);
+        laneH2Intersections.add(intersection2L2);
+        laneH2Intersections.add(intersection3L2);
+
+        lanes.add(new Lane(LaneType.HORIZONTAL, 20, 67, vmax, probabilityOfDescreasing, dt, periodic, 16, laneH1Intersections));
+        lanes.add(new Lane(LaneType.HORIZONTAL, 20, 67, vmax, probabilityOfDescreasing, dt, periodic, 17, laneH2Intersections));
         lanes.add(new Lane(LaneType.VERTICAL, 10, 33, vmax, probabilityOfDescreasing, dt, periodic, 16, laneV1Intersections));
         lanes.add(new Lane(LaneType.VERTICAL, 10, 33, vmax, probabilityOfDescreasing, dt, periodic, 32, laneV2Intersections));
         lanes.add(new Lane(LaneType.VERTICAL, 10, 33, vmax, probabilityOfDescreasing, dt, periodic, 48, laneV3Intersections));
