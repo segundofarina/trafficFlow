@@ -5,12 +5,14 @@ public class Car {
     private int id;
     private double position;
     private double velocity;
+    private LaneType laneType;
 
 
-    public Car(int id, double position, double velocity) {
+    public Car(int id, double position, double velocity,LaneType laneType) {
         this.id = id;
         this.position = position;
         this.velocity = velocity;
+        this.laneType = laneType;
     }
 
     public double getPosition() {
@@ -44,6 +46,10 @@ public class Car {
         }
     }
 
+    public LaneType getLaneType() {
+        return laneType;
+    }
+
     public int getId() {
         return id;
     }
@@ -51,8 +57,10 @@ public class Car {
     @Override
     public String toString() {
         return "Car{" +
-                "position=" + position +
+                "id=" + id +
+                ", position=" + position +
                 ", velocity=" + velocity +
+                ", laneType=" + laneType +
                 '}';
     }
 

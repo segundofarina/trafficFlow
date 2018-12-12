@@ -3,97 +3,77 @@ package ar.edu.itba.ss;
 import java.util.Optional;
 
 public class Intersection {
-    private int verticalLane;
-    private int horizontalLane;
-    private double verticalLanePosition;
-    private double horizontalLanePosition;
-    private Optional<Car> verticalCar;
-    private Optional<Car> horizontalCar;
-    private Optional<Car> selectedCar;
-    private Optional<Car> unSelectedCar;
-    private Optional<Car> crossingCar;
 
-    public Intersection(int verticalLane, int horizontalLane, double verticalLanePosition, double horizontalLanePosition) {
-        this.verticalLane = verticalLane;
-        this.horizontalLane = horizontalLane;
-        this.verticalLanePosition = verticalLanePosition;
-        this.horizontalLanePosition = horizontalLanePosition;
-        this.verticalCar = Optional.empty();
-        this.horizontalCar = Optional.empty();
-        this.selectedCar = Optional.empty();
-        this.unSelectedCar = Optional.empty();
-        crossingCar = Optional.empty();
+
+    private Optional<Car> crossing;
+    private Optional<Car> aboutToCrossH;
+    private Optional<Car> aboutToCrossV;
+    private double horizontalPos;
+    private double verticalPos;
+
+    public Intersection(double hoirzontalPos, double verticalPos) {
+        this.crossing = Optional.empty();
+        this.aboutToCrossH = Optional.empty();
+        this.aboutToCrossV = Optional.empty();
+        this.horizontalPos = hoirzontalPos;
+        this.verticalPos = verticalPos;
     }
 
-    public int getVerticalLane() {
-        return verticalLane;
+
+    public void markAsAboutToCross(Car car, LaneType type) {
+        if(type == LaneType.HORIZONTAL){
+            aboutToCrossH = Optional.of(car);
+        }else{
+            aboutToCrossV = Optional.of(car);
+        }
+    }
+    public void markAsCrossing(Car car ){
+        if(crossing.isPresent()){
+            throw new IllegalStateException();
+        }
+        crossing=Optional.of(car);
     }
 
-    public void setVerticalLane(int verticalLane) {
-        this.verticalLane = verticalLane;
+    public Optional<Car> getCrossing() {
+        return crossing;
     }
 
-    public int getHorizontalLane() {
-        return horizontalLane;
+    public Optional<Car> getAboutToCrossH() {
+        return aboutToCrossH;
     }
 
-    public void setHorizontalLane(int horizontalLane) {
-        this.horizontalLane = horizontalLane;
+    public Optional<Car> getAboutToCrossV() {
+        return aboutToCrossV;
     }
 
-    public double getVerticalLanePosition() {
-        return verticalLanePosition;
+    public double getHorizontalPos() {
+        return horizontalPos;
     }
 
-    public void setVerticalLanePosition(double verticalLanePosition) {
-        this.verticalLanePosition = verticalLanePosition;
+    public double getVerticalPos() {
+        return verticalPos;
     }
 
-    public double getHorizontalLanePosition() {
-        return horizontalLanePosition;
+    public void setCrossing(Optional<Car> crossing) {
+        this.crossing = crossing;
     }
 
-    public void setHorizontalLanePosition(double horizontalLanePosition) {
-        this.horizontalLanePosition = horizontalLanePosition;
+    public double getPosition(Car car){
+        if (car.getLaneType() == LaneType.HORIZONTAL){
+            return horizontalPos;
+        }else {
+            return verticalPos;
+        }
     }
 
-    public Optional<Car> getVerticalCar() {
-        return verticalCar;
-    }
+    public void clearAboutToCross(Car car) {
+        if(Optional.of(car).equals(aboutToCrossH)){
+            aboutToCrossH = Optional.empty();
+        }else if( Optional.of(car).equals(aboutToCrossV)){
+            aboutToCrossV = Optional.empty();
+        }else{
+            throw new IllegalArgumentException();
+        }
 
-    public void setVerticalCar(Optional<Car> verticalCar) {
-        this.verticalCar = verticalCar;
-    }
-
-    public Optional<Car> getHorizontalCar() {
-        return horizontalCar;
-    }
-
-    public void setHorizontalCar(Optional<Car> horizotnalCar) {
-        this.horizontalCar = horizotnalCar;
-    }
-
-    public Optional<Car> getSelectedCar() {
-        return selectedCar;
-    }
-
-    public void setSelectedCar(Optional<Car> selectedCar) {
-        this.selectedCar = selectedCar;
-    }
-
-    public Optional<Car> getUnSelectedCar() {
-        return unSelectedCar;
-    }
-
-    public void setUnSelectedCar(Optional<Car> unSelectedCar) {
-        this.unSelectedCar = unSelectedCar;
-    }
-
-    public Optional<Car> getCrossingCar() {
-        return crossingCar;
-    }
-
-    public void setCrossingCar(Optional<Car> crossingCar) {
-        this.crossingCar = crossingCar;
     }
 }

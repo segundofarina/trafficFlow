@@ -40,7 +40,7 @@ public class Printer {
         StringBuilder builder = new StringBuilder()
                 .append(totalCars + limits.size())
                 .append("\r\n")
-                .append("// X\t Y\t vel\t Radius\t\r\n");
+                .append("// X\t Y\t vel\t Radius\t ID\t\r\n");
 
         appendParticles(lanes, builder);
         //appendParticles(limits, direction, lanePosition, builder);
@@ -68,12 +68,12 @@ public class Printer {
     private void appendParticles(List<Lane> lanes, StringBuilder builder) {
         lanes.forEach(lane -> {
             lane.getCars().forEach(car -> {
-                if(lane.getId() == 1) {
+                if(lane.getType() == LaneType.HORIZONTAL) {
                     builder.append(car.getPosition()*7.5)
                             .append(" ")
-                            .append(lane.getLanePosition() * 7.5);
+                            .append(lane.getIntersectionPos() * 7.5);
                 } else {
-                    builder.append(lane.getLanePosition() * 7.5)
+                    builder.append(lane.getIntersectionPos() * 7.5)
                             .append(" ")
                             .append(car.getPosition()*7.5);
                 }
@@ -82,6 +82,8 @@ public class Printer {
                         .append(new Double(car.getVelocity()).floatValue())
                         .append(" ")
                         .append(2.5)
+                        .append(" ")
+                        .append(car.getId())
                         .append("\r\n");
             });
         });
