@@ -10,15 +10,20 @@ public class Intersection {
     private Optional<Car> aboutToCrossV;
     private double horizontalPos;
     private double verticalPos;
+    private Semaphore semaphore;
 
-    public Intersection(double hoirzontalPos, double verticalPos) {
+    public Intersection(double hoirzontalPos, double verticalPos,Semaphore semaphore) {
         this.crossing = Optional.empty();
         this.aboutToCrossH = Optional.empty();
         this.aboutToCrossV = Optional.empty();
         this.horizontalPos = hoirzontalPos;
         this.verticalPos = verticalPos;
+        this.semaphore = semaphore;
     }
 
+    public Semaphore getSemaphore() {
+        return semaphore;
+    }
 
     public void markAsAboutToCross(Car car, LaneType type) {
         if(type == LaneType.HORIZONTAL){

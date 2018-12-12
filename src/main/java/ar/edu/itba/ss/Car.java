@@ -78,4 +78,9 @@ public class Car {
     public int hashCode() {
         return getId();
     }
+
+
+    public Car clone(){
+        return new Car(id,position,velocity,laneType);
+    }
 }

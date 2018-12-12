@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Lane {
+    private int id;
     private LaneType type;
     private Set<Car> cars;
     private int cellsAmount;
@@ -12,23 +13,22 @@ public class Lane {
     private double probabilityOfDescreasing;
     private Random random;
     private double dt;
-    private boolean periodic;
     //private double intersectionPos;
     private double lanePosition;
     private List<Intersection> intersections;
 
-    public Lane(LaneType type, int numberOfCars, int cellsAmount, double vmax, double probabilityOfDescreasing, double dt, boolean periodic, double lanePosition, List<Intersection> intersections) {
+    public Lane(int id ,LaneType type, int numberOfCars, int cellsAmount, double vmax, double probabilityOfDescreasing, double dt, double lanePosition, List<Intersection> intersections) {
         this.type = type;
         this.cellsAmount = cellsAmount;
         this.vmax = vmax;
         this.probabilityOfDescreasing = probabilityOfDescreasing;
         this.dt = dt;
-        this.periodic = periodic;
         this.cars = new HashSet<>();
         this.random = new Random();
         this.lanePosition = lanePosition;
         //this.intersectionPos = lanePosition;
         this.intersections = intersections;
+        this.id = id;
 
 
         List<Double> intersetctionPos = intersections.stream().map(intersection ->
@@ -36,12 +36,12 @@ public class Lane {
         ).collect(Collectors.toList());
 
         List<Integer> positions = IntStream.range(0,(int) cellsAmount).boxed()
-                .filter(i -> !intersetctionPos.contains(i))
+                .filter(i -> !intersetctionPos.contains(i.doubleValue()))
                 .collect(Collectors.toList());
 
         Collections.shuffle(positions);
 
-        int carId = LaneType.HORIZONTAL == type? 1000:0;
+        int carId = 1000*id;
 
 
         positions.subList(0, numberOfCars)
@@ -53,8 +53,9 @@ public class Lane {
     public void updatePositions() {
         setVelocitites();
         slowDownIfVehicleAtSite();
-        //randomDecrease();
-        slowDownIfAboutToCross();
+        randomDecrease();
+        //slowDownIfAboutToCross();
+        stopIfRedLight();
 //        advanceVehicles();
     }
 
@@ -81,6 +82,27 @@ public class Lane {
         });
     }
 
+    private void stopIfRedLight(){
+        intersections.forEach(intersection -> {
+            double intersectionPos = type == LaneType.HORIZONTAL ? intersection.getVerticalPos() : intersection.getHorizontalPos();
+
+            Optional<Car> attemptToCross = cars.stream()
+                    .filter(car -> car.getPosition() < intersectionPos && car.getPosition() + car.getVelocity() * dt >= intersectionPos)
+                    .findFirst();
+            if(intersection.getSemaphore().isRed(type) || intersection.getSemaphore().isYellow(type)){
+                attemptToCross.ifPresent(car->car.setVelocity(intersectionPos-car.getPosition()-dt));
+            }
+
+            attemptToCross.ifPresent(car -> getOneAhead(car).ifPresent(ahead->{
+                if(ahead.getPosition() == intersectionPos+1){
+                    car.setVelocity(intersectionPos-car.getPosition()-dt);
+                }
+            } ));
+
+
+        });
+    }
+
 
     private void setVelocitites(){
         // set to 0 if is not selected car in intersection
@@ -93,14 +115,7 @@ public class Lane {
 
     private void slowDownIfVehicleAtSite(){
         cars.forEach(car -> {
-            Optional<Car> oneAhead = cars.stream().filter(carO-> carO.getId()!=car.getId()).min((car1,car2)-> {
-                double dist1 = car1.distanceTo(car);
-                double dist2= car2.distanceTo(car);
-
-                dist1 = dist1>0 ?dist1:dist1+ cellsAmount;
-                dist2 =dist2>0 ?dist2:dist2+ cellsAmount;
-                return (int)Math.signum(dist1-dist2);
-            });
+            Optional<Car> oneAhead = getOneAhead(car);
 
             oneAhead.ifPresent( ahead-> {
                 double breach = ahead.getPosition()-car.getPosition();
@@ -112,6 +127,16 @@ public class Lane {
         });
     }
 
+    private Optional<Car> getOneAhead(Car car) {
+        return cars.stream().filter(carO-> carO.getId()!=car.getId()).min((car1,car2)-> {
+            double dist1 = car1.distanceTo(car);
+            double dist2= car2.distanceTo(car);
+
+            dist1 = dist1>0 ?dist1:dist1+ cellsAmount;
+            dist2 =dist2>0 ?dist2:dist2+ cellsAmount;
+            return (int)Math.signum(dist1-dist2);
+        });
+    }
 
 
     private void randomDecrease(){
@@ -142,5 +167,9 @@ public class Lane {
 
     public double getIntersectionPos() {
         return lanePosition;
+    }
+
+    public List<Intersection> getIntersections() {
+        return intersections;
     }
 }
