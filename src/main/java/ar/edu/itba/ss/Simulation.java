@@ -25,16 +25,16 @@ public class Simulation {
         lanes = new ArrayList<>();
         intersections = new ArrayList<>();
 
-        Intersection intersection1 = new Intersection(16,16,new Semaphore(Semaphore.STATE.GREEN, 30,6,0,false));
-        Intersection intersection2 = new Intersection(16,32,new Semaphore(Semaphore.STATE.GREEN, 30,6,0,false));
-        Intersection intersection3 = new Intersection(16,48,new Semaphore(Semaphore.STATE.GREEN, 30,6,0,false));
+        Intersection intersection1 = new Intersection(16,16,new Semaphore(Semaphore.STATE.GREEN, 30,3,0,false));
+        Intersection intersection2 = new Intersection(16,32,new Semaphore(Semaphore.STATE.GREEN, 30,3,0,false));
+        Intersection intersection3 = new Intersection(16,48,new Semaphore(Semaphore.STATE.GREEN, 30,3,0,false));
         intersections.add(intersection1);
         intersections.add(intersection2);
         intersections.add(intersection3);
 
-        Intersection intersection1L2 = new Intersection(17,16,new Semaphore(Semaphore.STATE.GREEN, 30,6,0,true));
-        Intersection intersection2L2 = new Intersection(17,32,new Semaphore(Semaphore.STATE.GREEN, 30,6,0,true));
-        Intersection intersection3L2 = new Intersection(17,48,new Semaphore(Semaphore.STATE.GREEN, 30,6,0,true));
+        Intersection intersection1L2 = new Intersection(17,16,new Semaphore(Semaphore.STATE.GREEN, 30,3,0,true));
+        Intersection intersection2L2 = new Intersection(17,32,new Semaphore(Semaphore.STATE.GREEN, 30,3,0,true));
+        Intersection intersection3L2 = new Intersection(17,48,new Semaphore(Semaphore.STATE.GREEN, 30,3,0,true));
         intersections.add(intersection1L2);
         intersections.add(intersection2L2);
         intersections.add(intersection3L2);

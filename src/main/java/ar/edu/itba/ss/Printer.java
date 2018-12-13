@@ -4,21 +4,23 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Printer {
 
     private BufferedWriter bw;
 
-    public Printer(String outPath) {
+    private Map<Integer,Car> previousCars;
+    private int addedframes;
 
+    public Printer(String outPath) {
+        previousCars = new HashMap<>();
         try {
             bw = new BufferedWriter(new FileWriter(outPath  + LocalDateTime.now() + ".txt", true));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.addedframes = 10;
     }
 
     public void close() {
@@ -31,18 +33,17 @@ public class Printer {
     }
 
 
-    private String generateFileString(List<Lane> lanes) {
+    private String generateFileString(List<Lane> lanes,int offset) {
         Set<Car> limits = new HashSet<>();
 
         int totalCars = lanes.stream().map(lane -> lane.getCars().size()).reduce(0, (a, b) -> a+b);
-
         //addBorders(limits);
         StringBuilder builder = new StringBuilder()
                 .append(totalCars + limits.size())
                 .append("\r\n")
                 .append("// X\t Y\t vel\t Radius\t ID\t\r\n");
 
-        appendParticles(lanes, builder);
+        appendParticles(lanes, builder,offset);
         //appendParticles(limits, direction, lanePosition, builder);
         return builder.toString();
     }
@@ -65,26 +66,23 @@ public class Printer {
 //        return count;
 //    }
 
-    private void appendParticles(List<Lane> lanes, StringBuilder builder) {
+    private void appendParticles(List<Lane> lanes, StringBuilder builder,int offeset) {
         lanes.forEach(lane -> {
             lane.getCars().forEach(car -> {
-                if(lane.getType() == LaneType.HORIZONTAL) {
-                    builder.append(car.getPosition()*7.5)
-                            .append(" ")
-                            .append(lane.getIntersectionPos() * 7.5);
-                } else {
-                    builder.append(lane.getIntersectionPos() * 7.5)
-                            .append(" ")
-                            .append(car.getPosition()*7.5);
+                if(previousCars.isEmpty()) {
+                    appendCar(builder, lane, car);
+                }else{
+                    Car previosCar = previousCars.get(car.getId());
+                    double breach = car.getPosition()- previosCar.getPosition();
+                    if(breach<0){
+                        breach = lane.getCellsAmount()+breach;
+                        System.out.println(breach);
+                    }
+                    double delta = breach/addedframes;
+                        Car newCar =car.clone();
+                        newCar.setPosition(previosCar.getPosition()+delta*offeset);
+                        appendCar(builder, lane, newCar);
                 }
-
-                builder.append(" ")
-                        .append(new Double(car.getVelocity()).floatValue())
-                        .append(" ")
-                        .append(2.5)
-                        .append(" ")
-                        .append(car.getId())
-                        .append("\r\n");
             });
         });
 
@@ -112,9 +110,37 @@ public class Printer {
         }*/
     }
 
+    private void appendCar(StringBuilder builder, Lane lane, Car car) {
+        if(lane.getType() == LaneType.HORIZONTAL) {
+            builder.append(car.getPosition()*7.5)
+                    .append(" ")
+                    .append(lane.getIntersectionPos() * 7.5);
+        } else {
+            builder.append(lane.getIntersectionPos() * 7.5)
+                    .append(" ")
+                    .append(car.getPosition()*7.5);
+        }
+
+        builder.append(" ")
+                .append(new Double(car.getVelocity()).floatValue())
+                .append(" ")
+                .append(2.5)
+                .append(" ")
+                .append(car.getId())
+                .append("\r\n");
+    }
+
 
     public void appendToAnimation(List<Lane> lanes){
-        appendToFile(generateFileString(lanes));
+        for(int i=1; i<addedframes+1;i++){
+            appendToFile(generateFileString(lanes,i));
+        }
+
+        previousCars = new HashMap<>();
+        lanes.stream()
+                .flatMap(lane -> lane.getCars().stream())
+                .forEach(car -> previousCars.put(car.getId(),car.clone()));
+
     }
     public void appendToFile( String data) {
         try {

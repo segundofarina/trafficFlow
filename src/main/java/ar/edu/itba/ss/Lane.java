@@ -13,7 +13,6 @@ public class Lane {
     private double probabilityOfDescreasing;
     private Random random;
     private double dt;
-    //private double intersectionPos;
     private double lanePosition;
     private List<Intersection> intersections;
 
@@ -41,13 +40,20 @@ public class Lane {
 
         Collections.shuffle(positions);
 
-        int carId = 1000*id;
+        int carId = 1000*this.id;
 
 
         positions.subList(0, numberOfCars)
                 .forEach(pos ->this.cars.add(new Car(carId + pos, pos,0, type)));
         //cars.stream().sorted(Comparator.comparingDouble(Car::getPosition)).forEach(System.out::println);
 
+    }
+
+    private Lane(int id, LaneType type, Set<Car> cars, List<Intersection> intersections) {
+        this.id = id;
+        this.type = type;
+        this.cars = cars;
+        this.intersections = intersections;
     }
 
     public void updatePositions() {
@@ -171,5 +177,13 @@ public class Lane {
 
     public List<Intersection> getIntersections() {
         return intersections;
+    }
+
+    public Lane clone(Set<Car> cars){
+        return new Lane(this.id,this.type,cars,this.intersections);
+    }
+
+    public int getCellsAmount() {
+        return cellsAmount;
     }
 }
